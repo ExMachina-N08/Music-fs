@@ -48,9 +48,9 @@ const Signup = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-transparent p-4">
       <div className="bg-green-600 rounded-lg p-8 shadow-lg max-w-lg w-full">
         <div className="flex justify-center mb-6">
-          <SpotifyFilled style={{ fontSize: 60, color: "white" }} />
+          <SpotifyFilled style={{ fontSize: 60, color: "black" }} />
         </div>
-        <h1 className="text-3xl font-bold text-center text-white mb-8">
+        <h1 className="text-3xl font-bold text-center text-black mb-8">
           Signup to Music Apps
         </h1>
         <Form
@@ -63,7 +63,7 @@ const Signup = () => {
           autoComplete="off"
         >
           <Form.Item
-            label={<span className="text-white">Email</span>}
+            label={<span className="text-black">Email</span>}
             name="email"
             rules={[
               {
@@ -80,7 +80,7 @@ const Signup = () => {
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-white">Username</span>}
+            label={<span className="text-black">Username</span>}
             name="username"
             rules={[{ required: true, message: "Please input your username!" }]}
           >
@@ -91,7 +91,7 @@ const Signup = () => {
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-white">Name</span>}
+            label={<span className="text-black">Name</span>}
             name="name"
             rules={[
               {
@@ -107,7 +107,7 @@ const Signup = () => {
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-white">Password</span>}
+            label={<span className="text-black">Password</span>}
             name="password"
             rules={[{ required: true, message: "Please input your password!" }]}
           >
@@ -118,7 +118,7 @@ const Signup = () => {
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-white">Age</span>}
+            label={<span className="text-black">Age</span>}
             name="age"
             rules={[
               {
@@ -152,6 +152,12 @@ const Signup = () => {
           <Form.Item>
             <Link to="/auth/login" className="block text-center text-white">
               Already have an account? Login here
+            </Link>
+            <Link
+              to="/auth/artist/signup"
+              className="block text-center text-white"
+            >
+              Are you an artist? Signup here
             </Link>
           </Form.Item>
         </Form>
