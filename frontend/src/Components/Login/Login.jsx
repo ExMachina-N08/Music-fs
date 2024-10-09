@@ -14,7 +14,10 @@ const Login = () => {
   const onFinish = async (values) => {
     const { email, password } = values;
     try {
-      const response = await axiosInstance.post("/login", { email, password });
+      const response = await axiosInstance.post("/user/login", {
+        email,
+        password,
+      });
 
       if (response.status === 200) {
         const userData = response.data.user;
