@@ -1,0 +1,19 @@
+/* Add this to your CSS file */
+.ant-modal-content {
+  background-color: transparent !important; /* Dark grey background */
+  box-shadow: none !important; /* Remove shadow */
+  border: none !important; /* Remove border */
+}
+
+.custom-modal .ant-modal {
+  padding: 0 !important;
+}
+
+.custom-modal .ant-modal-body {
+  background-color: transparent !important; /* Dark grey background */
+  padding: 0 !important;
+}
+
+.custom-modal .ant-modal-header {
+  border-bottom: none !important; /* Remove header border */
+}

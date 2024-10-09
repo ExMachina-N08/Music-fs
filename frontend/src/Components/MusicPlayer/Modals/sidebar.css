@@ -1,0 +1,18 @@
+.sidebar-contents {
+}
+li {
+  transition: 0.3s ease-in-out;
+  &:hover {
+    color: rgb(23, 248, 109);
+  }
+
+  cursor: pointer;
+}
+
+a {
+  transition: 0.3s ease-in-out;
+  color: white;
+  &:hover {
+    color: rgb(23, 248, 109);
+  }
+}

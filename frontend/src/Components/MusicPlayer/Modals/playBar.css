@@ -1,0 +1,30 @@
+body {
+  /* background: linear-gradient(250deg, #7b2ff7, #f107a3); */
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: end;
+}
+.play {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-grow: 1;
+  padding: 15px;
+}
+.parent {
+  background: white;
+  width: 90vw;
+  height: 100px;
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+}
+.parent[data-isOpen="true"] {
+  width: 95vw;
+  height: 98vh;
+}
