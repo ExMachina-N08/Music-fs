@@ -3,7 +3,7 @@ import "./login.css";
 import { SpotifyFilled } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, message } from "antd";
 import { useAuth } from "../Context/AuthContext";
 import axiosInstance from "../../service";
 
@@ -14,29 +14,22 @@ const Login = () => {
   const onFinish = async (values) => {
     const { email, password } = values;
     try {
-      const response = await axiosInstance.post("/user/login", {
-        email,
-        password,
-      });
+      const response = await axiosInstance.post("/login", { email, password });
 
       if (response.status === 200) {
-        console.log("User login successful", response);
-
-        // Extract response data
         const userData = response.data.user;
         const authToken = response.data.token;
         const authRefreshToken = response.data.refreshToken;
 
-        // Call login function from AuthContext to store the data and fetch the role
         await login(userData, authToken, authRefreshToken);
-
-        // Navigate to homepage after successful login
         navigate("/");
       } else {
         console.error("Login failed:", response.data.message);
+        message.error("Login failed. Please check your credentials.");
       }
     } catch (error) {
       console.error("Login error:", error);
+      message.error("Error logging in. Please try again.");
     }
   };
 
