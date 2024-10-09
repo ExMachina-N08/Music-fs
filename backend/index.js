@@ -4,7 +4,10 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const createError = require("http-errors");
-const router = require("./router/index"); // This should be the correct import
+const path = require("path"); // Added for serving frontend files
+
+// Import routes
+const router = require("./router/index");
 const cloudinaryTest = require("./router/cloudinaryTest");
 
 dotenv.config();
@@ -20,7 +23,7 @@ app.get("/", (req, res) => {
   res.send("Server is running");
 });
 
-// Enable Cors
+// Enable CORS
 app.use(
   cors({
     origin: "http://localhost:3001",
@@ -32,10 +35,16 @@ app.use(
 app.use(express.json());
 
 // Register routes
-app.use("/api", router); // This ensures all routes under /api/ go to the correct router
-
-// Test Cloudinary Route
+app.use("/api", router);
 app.use("/api/cloudinary", cloudinaryTest);
+
+// Serve static files from the frontend build
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// Catch-all route to serve index.html for any unknown routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 
 // Catch-all for 404
 app.use((req, res, next) => {
@@ -43,7 +52,8 @@ app.use((req, res, next) => {
 });
 
 // Error-handling middleware with four parameters
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
+  // Note the 'next' parameter is needed
   console.log(err.stack);
   res.status(err.status || 500).send(err.message);
 });
