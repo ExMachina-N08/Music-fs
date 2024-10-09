@@ -51,26 +51,31 @@ const New = () => {
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-        {recentAlbums.map((album) => (
-          <div key={album._id} className="bg-transparent p-4 rounded-lg">
-            <div className="mt-2">
-              <Link
-                to={`/new-album/${album._id}`} // Link to album details page
-                className="mt-2 inline-block hover:text-green-600"
-              >
-                <img
-                  className="w-full h-48 object-cover rounded-lg"
-                  src={album.coverImageUrl}
-                  alt={album.title}
-                />
-                <h3 className="text-lg font-bold text-left mt-2">
-                  {album.title}
-                </h3>
-                <p className="text-left">{album.artist.name}</p>
-              </Link>
-            </div>
-          </div>
-        ))}
+        {recentAlbums.map(
+          (album) =>
+            album && (
+              <div key={album._id} className="bg-transparent p-4 rounded-lg">
+                <div className="mt-2">
+                  <Link
+                    to={`/new-album/${album._id}`}
+                    className="mt-2 inline-block hover:text-green-600"
+                  >
+                    <img
+                      className="w-full h-48 object-cover rounded-lg"
+                      src={album.coverImageUrl}
+                      alt={album.title}
+                    />
+                    <h3 className="text-lg font-bold text-left mt-2">
+                      {album.title}
+                    </h3>
+                    <p className="text-left">
+                      {album.artist ? album.artist.name : "Unknown Artist"}
+                    </p>
+                  </Link>
+                </div>
+              </div>
+            )
+        )}
       </div>
 
       {/* Show a message if there is an error */}
