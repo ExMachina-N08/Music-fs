@@ -6,18 +6,27 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const New = () => {
   const [recentAlbums, setRecentAlbums] = useState([]);
-  const [loading, setLoading] = useState(false); // Start with false
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
 
   const fetchRecentAlbums = (page) => {
     setLoading(true);
-    setError(null); // Clear any previous errors
+    setError(null); // Clear previous errors
+
     axios
       .get(`${API_BASE_URL}/api/get/recent-albums?page=${page}&limit=8`)
       .then((res) => {
-        // Append new albums to the existing list
-        setRecentAlbums((prevAlbums) => [...prevAlbums, ...res.data.albums]);
+        // Check if data and albums are present
+        const albums = res.data && res.data.albums ? res.data.albums : [];
+
+        // Append new albums to the existing list only if they exist
+        if (albums.length > 0) {
+          setRecentAlbums((prevAlbums) => [...prevAlbums, ...albums]);
+        } else {
+          console.warn("No albums found in the response.");
+        }
+
         setLoading(false);
       })
       .catch((err) => {
