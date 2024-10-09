@@ -1,167 +1,161 @@
 import React from "react";
 import { SpotifyFilled } from "@ant-design/icons";
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Removed json
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, InputNumber } from "antd"; // Removed ConfigProvider
+import { Button, Checkbox, Form, Input, InputNumber, message } from "antd";
 import axios from "axios";
+
+// Set the API base URL, with a fallback for local development
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
 const Signup = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Function called on form submission success
-  const onFinish = (values) => {
-    console.log("Success:", values);
-
-    // Create formData object from values
+  const onFinish = async (values) => {
     let formData = { ...values };
+    const isArtistSignup = location.pathname === "/auth/artist/signup";
+    const endpoint = isArtistSignup
+      ? "/api/artist/register"
+      : "/api/user/register";
 
-    // Check if the path is "/artist/signup" and set the role to "artist"
-    if (location.pathname === "/auth/artist/signup") {
-      formData = { ...formData, role: "artist" }; // Add role to formData for artists
-
-      axios
-        .post("http://localhost:8080/api/artist/register", formData)
-        .then((response) => {
-          console.log("Artist created successfully");
-          localStorage.setItem("userData", JSON.stringify(formData));
-          navigate("/auth/login");
-        })
-        .catch((error) => {
-          console.error("Error creating artist:", error);
-        });
-
-      return; // Prevent further execution if the artist API call is made
+    if (isArtistSignup) {
+      formData.role = "artist";
     }
 
-    // Regular user registration
-    axios
-      .post("http://localhost:8080/api/user/register", formData)
-      .then((response) => {
-        console.log("Account created successfully");
+    try {
+      const response = await axios.post(`${API_BASE_URL}${endpoint}`, formData);
+      if (response.status === 200) {
         localStorage.setItem("userData", JSON.stringify(formData));
+        message.success("Account created successfully!");
         navigate("/auth/login");
-      })
-      .catch((error) => {
-        console.error("Error creating account:", error);
-      });
+      } else {
+        message.error("Signup failed. Please try again.");
+      }
+    } catch (error) {
+      message.error(
+        "Error creating account. Please check your inputs or try again later."
+      );
+    }
   };
 
-  // Function called on form submission failure
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
   return (
-    <div className="login-div">
-      <SpotifyFilled style={{ fontSize: 60 }} />
-      <h1>Signup to Music Apps </h1>
-      <Form
-        name="normal-login"
-        variant="filled"
-        className="login-form"
-        layout="vertical"
-        wrapperCol={{
-          span: 24,
-        }}
-        style={{
-          maxWidth: 700,
-        }}
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            {
-              required: true,
-              message: "Please input your email!",
-            },
-          ]}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-transparent p-4">
+      <div className="bg-green-600 rounded-lg p-8 shadow-lg max-w-lg w-full">
+        <div className="flex justify-center mb-6">
+          <SpotifyFilled style={{ fontSize: 60, color: "white" }} />
+        </div>
+        <h1 className="text-3xl font-bold text-center text-white mb-8">
+          Signup to Music Apps
+        </h1>
+        <Form
+          name="normal-signup"
+          className="space-y-6"
+          layout="vertical"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
         >
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} />
-        </Form.Item>
-
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[
-            {
-              required: true,
-              message: "Please input your username!",
-            },
-          ]}
-        >
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} />
-        </Form.Item>
-
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Please type in name you want to display!",
-            },
-          ]}
-        >
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} />
-        </Form.Item>
-
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Please input your password!",
-            },
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="site-form-item-icon" />}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Age"
-          name="age"
-          rules={[
-            {
-              required: true,
-              message: "Please input your age!",
-            },
-          ]}
-        >
-          <InputNumber />
-        </Form.Item>
-
-        <Form.Item
-          name="remember"
-          valuePropName="checked"
-          wrapperCol={{
-            span: 6,
-          }}
-        >
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-            style={{ fontSize: 22 }}
+          <Form.Item
+            label={<span className="text-white">Email</span>}
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Please input your email!",
+                type: "email",
+              },
+            ]}
           >
-            Sign Up
-          </Button>
-        </Form.Item>
-      </Form>
+            <Input
+              prefix={<UserOutlined className="text-gray-500" />}
+              className="rounded"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={<span className="text-white">Username</span>}
+            name="username"
+            rules={[{ required: true, message: "Please input your username!" }]}
+          >
+            <Input
+              prefix={<UserOutlined className="text-gray-500" />}
+              className="rounded"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={<span className="text-white">Name</span>}
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: "Please type in name you want to display!",
+              },
+            ]}
+          >
+            <Input
+              prefix={<UserOutlined className="text-gray-500" />}
+              className="rounded"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={<span className="text-white">Password</span>}
+            name="password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="text-gray-500" />}
+              className="rounded"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label={<span className="text-white">Age</span>}
+            name="age"
+            rules={[
+              {
+                required: true,
+                message: "Please input your age!",
+                type: "number",
+                min: 1,
+              },
+            ]}
+          >
+            <InputNumber min={1} className="w-full rounded" />
+          </Form.Item>
+
+          <Form.Item
+            name="remember"
+            valuePropName="checked"
+            className="text-white"
+          >
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-md text-lg"
+            >
+              Sign Up
+            </Button>
+          </Form.Item>
+          <Form.Item>
+            <Link to="/auth/login" className="block text-center text-white">
+              Already have an account? Login here
+            </Link>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 };
