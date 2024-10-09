@@ -43,7 +43,7 @@ const ImageUpload = () => {
     try {
       // Make POST request to backend to upload the image
       const response = await axios.post(
-        `${API_BASE_URL}/upload/cover`,
+        `${API_BASE_URL}/api/upload/cover`,
         formData,
         {
           headers: {
