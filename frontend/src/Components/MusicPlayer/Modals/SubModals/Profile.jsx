@@ -1,10 +1,12 @@
 import { Modal, Button, Form, Input } from "antd";
 import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom"; // Import Link component
 import { PlayerContext } from "../../../Context/PlayerContext";
 import { useAuth } from "../../../Context/AuthContext";
 import EditProfileModal from "./EditProfileModal";
 import axiosInstance from "../../../../service";
 import "./profile.css";
+
 const validateMessages = {
   required: "${label} is required!",
   types: {
@@ -126,6 +128,15 @@ const Profile = () => {
                     Login
                   </Button>
                 </Form.Item>
+                <p className="text-sm text-gray-400">
+                  Don’t have an account?{" "}
+                  <Link
+                    to="auth/signup"
+                    className="text-blue-500 hover:text-blue-400"
+                  >
+                    Sign up here
+                  </Link>
+                </p>
               </>
             )}
           </Form>

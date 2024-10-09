@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 
+// Set the API base URL, with a fallback for local development
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+
 const UploadAlbum = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [genre, setGenre] = useState("");
   const [releaseDate, setReleaseDate] = useState("");
   const [songs, setSongs] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,12 +27,17 @@ const UploadAlbum = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!artistId) {
+      setErrorMessage("Artist ID not found. Please log in again.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("genre", genre);
     formData.append("releaseDate", releaseDate);
-    formData.append("artistId", artistId); // Add artistId from localStorage
+    formData.append("artistId", artistId);
 
     // Append each song to the formData
     songs.forEach((song) => {
@@ -36,7 +46,7 @@ const UploadAlbum = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/upload/album", // Ensure this matches your backend route
+        `${API_BASE_URL}/upload/album`,
         formData,
         {
           headers: {
@@ -44,25 +54,28 @@ const UploadAlbum = () => {
           },
         }
       );
+
       console.log("Album uploaded successfully:", response.data);
       localStorage.setItem(
         "albumData",
         JSON.stringify({
-          albumId: response.data.album._id, // Album ID from the backend
-          artistId: artistId, // Artist ID already from localStorage
+          albumId: response.data.album._id,
+          artistId: artistId,
         })
       );
 
-      // Navigate to the image upload page (or another component)
-      navigate("/image"); // Adjust this path to your route for ImageUpload
+      // Navigate to the image upload page or another appropriate page
+      navigate("/image");
     } catch (error) {
       console.error("Error uploading album:", error);
+      setErrorMessage("Failed to upload album. Please try again.");
     }
   };
 
   return (
     <div className="container mx-auto p-5">
       <h1 className="text-2xl font-bold mb-4">Upload Album</h1>
+      {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">

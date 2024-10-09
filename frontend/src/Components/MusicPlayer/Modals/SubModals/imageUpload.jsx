@@ -4,6 +4,10 @@ import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+// Set the API base URL, with a fallback for local development
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+
 const ImageUpload = () => {
   const [fileList, setFileList] = useState([]); // Store selected file list
   const navigate = useNavigate();
@@ -13,7 +17,14 @@ const ImageUpload = () => {
   const artistId = albumData?.artistId;
   const albumId = albumData?.albumId;
 
-  // Handle file change and only keep the latest selected file
+  // Redirect if album data is missing
+  if (!albumId || !artistId) {
+    message.error("Album data is missing. Please upload an album first.");
+    navigate("/upload"); // Redirect to upload page or other appropriate page
+    return null; // Render nothing while redirecting
+  }
+
+  // Handle file change and keep only the latest selected file
   const handleFileChange = ({ fileList }) => {
     setFileList(fileList.slice(-1)); // Keep only the latest selected file
   };
@@ -32,7 +43,7 @@ const ImageUpload = () => {
     try {
       // Make POST request to backend to upload the image
       const response = await axios.post(
-        "http://localhost:8080/api/upload/cover",
+        `${API_BASE_URL}/upload/cover`,
         formData,
         {
           headers: {
@@ -54,14 +65,6 @@ const ImageUpload = () => {
     <div className="container mx-auto p-5">
       <h1 className="text-2xl font-bold mb-4">Upload Album Cover Image</h1>
       <Form onFinish={handleSubmit}>
-        <Form.Item label="Album ID" hidden>
-          <Input disabled value={albumId} />
-        </Form.Item>
-
-        <Form.Item label="Artist ID" hidden>
-          <Input disabled value={artistId} />
-        </Form.Item>
-
         {/* File Upload Field */}
         <Form.Item
           label="Cover Image"
@@ -73,6 +76,7 @@ const ImageUpload = () => {
             onChange={handleFileChange}
             fileList={fileList} // Show selected file in the upload component
             accept="image/*" // Restrict to image files
+            maxCount={1} // Restrict to one file
           >
             <Button icon={<UploadOutlined />}>Select Cover Image</Button>
           </Upload>
