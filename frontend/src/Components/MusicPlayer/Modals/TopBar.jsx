@@ -4,7 +4,9 @@ import { assets } from "../../../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { PlayerContext } from "../../Context/PlayerContext";
 import axios from "axios";
+import { debounce } from "lodash";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const TopBar = () => {
   const navigate = useNavigate();
   const [searchVisible, setSearchVisible] = useState(false); // State to manage input visibility
@@ -46,19 +48,19 @@ const TopBar = () => {
 
   // Perform search by sending the query to the backend
   const performSearch = async (query) => {
-    if (!query) return; // If the search query is empty, don't make a request
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery) return;
 
     try {
       const backendResponse = await axios.get(
-        `http://localhost:8080/api/get/search?query=${query}`
+        `${API_BASE_URL}/api/get/search?query=${trimmedQuery}`
       );
-
-      console.log("Search Results:", backendResponse.data);
-      setSearchResults(backendResponse.data); // Store results from the backend in state
+      setSearchResults(backendResponse.data);
     } catch (error) {
       console.error("Error while searching:", error);
     }
   };
+  const debouncedSearch = debounce(performSearch, 300);
 
   // Function to play a song when a search result is clicked
   const handlePlaySong = (song, isBackend = true) => {
