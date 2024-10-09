@@ -4,6 +4,10 @@ import axios from "axios";
 import { PlayerContext } from "../../../Context/PlayerContext";
 import { assets } from "../../../../assets/assets";
 
+// Set the API base URL with a fallback for production
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://music-fs-2.onrender.com";
+
 const RecentlyAddedAlbum = () => {
   const { id } = useParams();
   const [albumData, setAlbumData] = useState(null);
@@ -15,17 +19,14 @@ const RecentlyAddedAlbum = () => {
   // Function to play song by file URL and update the track state
   const playSongWithFileUrl = async (song) => {
     try {
-      // Set the audio source to the song's file URL
       audioRef.current.src = song.fileUrl;
       await audioRef.current.play();
       setPlayStatus(true); // Update play status to true
-
-      // Update the track state with the current song's details for the Playbar
       setTrack({
         id: song._id,
         name: song.title,
         image: song.coverImageUrl || albumData.coverImageUrl || assets.img1,
-        desc: albumData.title, // Use album title as description
+        desc: albumData.title,
         fileUrl: song.fileUrl,
       });
     } catch (error) {
@@ -37,9 +38,13 @@ const RecentlyAddedAlbum = () => {
   const fetchAlbumDetails = (albumId) => {
     setLoading(true);
     axios
-      .get(`http://localhost:8080/api/get/album/${albumId}`)
+      .get(`${API_BASE_URL}/api/get/album/${albumId}`)
       .then((res) => {
-        setAlbumData(res.data.album);
+        if (res.data && res.data.album) {
+          setAlbumData(res.data.album);
+        } else {
+          setError("Album data not found.");
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -63,7 +68,7 @@ const RecentlyAddedAlbum = () => {
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="text-red-500 text-center mt-4">{error}</div>;
   }
 
   return (
@@ -89,7 +94,7 @@ const RecentlyAddedAlbum = () => {
                   alt="Spotify Logo"
                 />
                 <b> Spotify</b> • 1,323,154 likes •{" "}
-                <b>{albumData.songs.length} songs</b>
+                <b>{albumData.songs ? albumData.songs.length : 0} songs</b>
               </p>
             </div>
           </div>
@@ -111,21 +116,22 @@ const RecentlyAddedAlbum = () => {
           <hr />
 
           {/* Render each song */}
-          {albumData.songs.map((song, index) => (
-            <div
-              key={song._id}
-              onClick={() => playSongWithFileUrl(song)} // Pass the song object to the function
-              className="grid grid-cols-3 sm:grid-cols-4 gap-2 p-2 mt-1 mb-1 text-[#a7a7a7] hover:bg-[#ffffff2b] cursor-pointer"
-            >
-              <p className="text-white ml-10 flex items-start">
-                <b className="mr-4 text-[#a7a7a7]">{index + 1}</b>
-                <span className="text-white">{song.title}</span>
-              </p>
-              <p className="text-[15px]">{albumData.title}</p>
-              <p className="text-[15px] hidden sm:block">5 days ago</p>
-              <p className="text-[15px] text-center">{song.duration}</p>
-            </div>
-          ))}
+          {albumData.songs &&
+            albumData.songs.map((song, index) => (
+              <div
+                key={song._id}
+                onClick={() => playSongWithFileUrl(song)} // Pass the song object to the function
+                className="grid grid-cols-3 sm:grid-cols-4 gap-2 p-2 mt-1 mb-1 text-[#a7a7a7] hover:bg-[#ffffff2b] cursor-pointer"
+              >
+                <p className="text-white ml-10 flex items-start">
+                  <b className="mr-4 text-[#a7a7a7]">{index + 1}</b>
+                  <span className="text-white">{song.title}</span>
+                </p>
+                <p className="text-[15px]">{albumData.title}</p>
+                <p className="text-[15px] hidden sm:block">5 days ago</p>
+                <p className="text-[15px] text-center">{song.duration}</p>
+              </div>
+            ))}
         </>
       )}
     </>
