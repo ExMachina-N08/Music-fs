@@ -16,9 +16,7 @@ const Signup = () => {
   const onFinish = async (values) => {
     let formData = { ...values };
     const isArtistSignup = location.pathname === "/auth/artist/signup";
-    const endpoint = isArtistSignup
-      ? "/api/artist/register"
-      : "/api/user/register";
+    const endpoint = isArtistSignup ? "/artist/register" : "/user/register";
 
     if (isArtistSignup) {
       formData.role = "artist";
