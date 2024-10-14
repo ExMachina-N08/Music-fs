@@ -3,11 +3,7 @@ import { SpotifyFilled } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, InputNumber, message } from "antd";
-import axios from "axios";
-
-// Set the API base URL, with a fallback for local development
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+import axiosInstance from "../../service";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -23,15 +19,19 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}${endpoint}`, formData);
-      if (response.status === 200) {
-        localStorage.setItem("userData", JSON.stringify(formData));
+      const response = await axiosInstance.post(endpoint, formData);
+      if (response.status === 200 || response.status === 201) {
+        localStorage.setItem("userData", JSON.stringify(response.data.user));
         message.success("Account created successfully!");
         navigate("/auth/login");
       } else {
         message.error("Signup failed. Please try again.");
       }
     } catch (error) {
+      console.error(
+        "Error during signup:",
+        error.response?.data || error.message
+      );
       message.error(
         "Error creating account. Please check your inputs or try again later."
       );
